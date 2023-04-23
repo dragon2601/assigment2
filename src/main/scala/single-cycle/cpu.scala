@@ -23,7 +23,11 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   val controlTransfer = Module(new ControlTransferUnit())
   val (cycleCount, _) = Counter(true.B, 1 << 30)
 
-  control.io := DontCare
+  val adder = Module(new SimpleAdder())
+  adder.io.inputx := 4.U
+  adder.io.inputy := pc
+  pc := adder.io.result
+
   registers.io := DontCare
   aluControl.io := DontCare
   alu.io := DontCare
@@ -34,7 +38,7 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   //FETCH
   io.imem.address := pc
   io.imem.valid := true.B
-
+  
   val instruction = Wire(UInt(32.W))
   when ((pc % 8.U) === 4.U) {
     instruction := io.imem.instruction(63, 32)
@@ -43,6 +47,34 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   }
   
   // Your code goes here
+
+  /**Instruction Memory*/
+  control.io.opcode := instruction(6,0)
+  registers.io.readreg1 := instruction(19,15)
+  registers.io.readreg2 := instruction(24,20)
+  registers.io.writereg := instruction(11,7)
+  aluControl.io.funct7 := instruction(31,25)
+  aluControl.io.funct3 := instruction(14,12)
+
+  /**Control Unit*/
+  aluControl.io.aluop := control.io.aluop
+  when(instruction(11,7) === 0.U){
+    registers.io.wen := 0.U
+  } 
+  .otherwise{
+    registers.io.wen := control.io.writeback_valid
+  }
+  /**ALU Control*/
+  //when(control.io.validinst === 1.U){
+  alu.io.operation := aluControl.io.operation
+  //}
+
+  /**Register File*/
+  alu.io.operand1 := registers.io.readdata1
+  alu.io.operand2 := registers.io.readdata2 
+
+  /**ALU */
+  registers.io.writedata := alu.io.result
 }
 
 /*

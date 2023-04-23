@@ -34,6 +34,125 @@ class ALUControl extends Module {
 
   io.operation := "b11111".U // Invalid
 
-  // Your code goes here
 
+  //ALU Op 64-bit
+  when(io.aluop === "b001".U){
+
+    // Funct7
+    when(io.funct7 === 0.U){
+
+      //Funct3
+      when(io.funct3 === "b000".U){
+        //ADD
+        io.operation := "b00000".U
+      } .elsewhen(io.funct3 === "b001".U){
+        //SLL
+        io.operation := "b10010".U
+      } .elsewhen(io.funct3 === "b010".U){
+        //SLT
+        io.operation := "b10110".U
+      } .elsewhen(io.funct3 === "b011".U){
+        //SLTU
+        io.operation := "b10111".U
+      } .elsewhen(io.funct3 === "b100".U){
+        //XOR
+        io.operation := "b01111".U
+      } .elsewhen(io.funct3 === "b101".U){
+        //SRL
+        io.operation := "b10100".U
+      } .elsewhen(io.funct3 === "b110".U){
+        //OR
+        io.operation := "b01110".U
+      } .elsewhen(io.funct3 === "b111".U){
+        //AND
+        io.operation := "b01101".U
+      }
+    //Funct 7
+    } .elsewhen (io.funct7 === "b0100000".U) {
+      when(io.funct3 === "b000".U){
+        //SUB
+        io.operation := "b00010".U
+      }
+      .elsewhen(io.funct3 === "b101".U){
+        //SRA
+        io.operation := "b10000".U
+      }
+    //Funct 7
+    } .elsewhen (io.funct7 === "b0000001".U){
+      when(io.funct3 === "b000".U){
+        //MUL
+        io.operation := "b00101".U
+      } .elsewhen(io.funct3 === "b001".U){
+        //MULH
+        io.operation := "b00111".U //<- This one is correct
+        //io.operation := "b10111".U //This is wrong
+      } .elsewhen(io.funct3 === "b010".U){
+        //MULHSU
+        io.operation := "b11000".U
+      } .elsewhen(io.funct3 === "b011".U){
+        //MULHU
+        io.operation := "b01000".U
+      } .elsewhen(io.funct3 === "b100".U){
+        //DIV
+        io.operation := "b01001".U
+      } .elsewhen(io.funct3 === "b101".U){
+        //DIVU
+        io.operation := "b01010".U
+      } .elsewhen(io.funct3 === "b110".U){
+        //REM
+        io.operation := "b11100".U
+      } .elsewhen(io.funct3 === "b111".U){
+        //REMU
+        io.operation := "b11011".U
+      }
+    }
+  }
+
+  //ALU Op 32-Bit
+  .elsewhen(io.aluop === 3.U){
+    // Funct7
+    when(io.funct7 === "b0000000".U){
+      //Funct3
+      when(io.funct3 === "b000".U){
+        //ADDW
+        io.operation := "b00001".U
+      } .elsewhen(io.funct3 === "b001".U){
+        //SLLW
+        io.operation := "b10011".U
+      } .elsewhen(io.funct3 === "b101".U){
+        //SRLW
+        io.operation := "b10101".U
+      }
+
+    //Funct 7
+    } .elsewhen (io.funct7 === "b0100000".U) {
+      when(io.funct3 === "b000".U){
+        //SUBW
+        io.operation := "b00100".U
+      }
+      .elsewhen(io.funct3 === "b101".U){
+        //SRAW
+        io.operation := "b10001".U
+      }
+    //Funct 7
+    } .elsewhen (io.funct7 === "b0000001".U){
+      //Funct3
+      when(io.funct3 === "b000".U){
+        //MULW
+        io.operation := "b00110".U
+      } .elsewhen(io.funct3 === "b100".U){
+        //DIVW
+        io.operation := "b01011".U
+      } .elsewhen(io.funct3 === "b101".U){
+        //DIVUW
+        io.operation := "b01100".U
+      } .elsewhen(io.funct3 === "b110".U){
+        //REMW
+        io.operation := "b11010".U
+      } .elsewhen(io.funct3 === "b111".U){
+        //REMUW
+        io.operation := "b11001".U
+      }
+    }
+  }
 }
