@@ -49,61 +49,27 @@ class ALU extends Module {
 
   io.result := 0.U
 
-  when (io.operation === "b00000".U) { // and
-    io.result := io.operand1 & io.operand2
-  }
-  .elsewhen (io.operation === "b00001".U) { // or
-    io.result := io.operand1 | io.operand2
-  }
-  .elsewhen (io.operation === "b00010".U) { // xor
-    io.result := io.operand1 ^ io.operand2
-  }
-  .elsewhen (io.operation === "b00100".U) { // sra
-    io.result := (io.operand1.asSInt >> io.operand2(5, 0)).asUInt // sra uses 6 bits of op2
-  }
-  .elsewhen (io.operation === "b00101".U) { // sraw
-    io.result := signExtend32To64((operand1_32.asSInt >> operand2_32(4, 0)).asUInt) // arithmetic (signed)
-                                                                                // sraw takes 5 bits of op2
-  }
-  .elsewhen (io.operation === "b00110".U) { // sll
-    io.result := io.operand1 << io.operand2(5, 0) // sll uses 6 bits of op2
-  }
-  .elsewhen (io.operation === "b00111".U) { // sllw
-    io.result := signExtend32To64(operand1_32 << operand2_32(4, 0)) // sllw uses 5 bits of op2
-  }
-  .elsewhen (io.operation === "b01000".U) { // srl
-    io.result := io.operand1 >> io.operand2(5, 0) // srl uses 6 bits of op2
-  }
-  .elsewhen (io.operation === "b01001".U) { // srlw
-    io.result := signExtend32To64(operand1_32 >> operand2_32(4, 0)) // srlw uses 5 bits of op2
-  }
-  .elsewhen (io.operation === "b01010".U) { // slt
-    io.result := (io.operand1.asSInt < io.operand2.asSInt).asUInt // signed operands
-  }
-  .elsewhen (io.operation === "b01011".U) { // sltu
-    io.result := (io.operand1.asUInt < io.operand2.asUInt).asUInt
-  }
-  .elsewhen (io.operation === "b01100".U) { // add
+  when (io.operation === "b00000".U) { // add
     io.result := io.operand1 + io.operand2
   }
-  .elsewhen (io.operation === "b01101".U) { // addw
+  .elsewhen (io.operation === "b00001".U) { // addw
     io.result := signExtend32To64(operand1_32 + operand2_32) // + results in width of max(width(op1), width(op2))
   }
-  .elsewhen (io.operation === "b01110".U) { // sub
+  .elsewhen (io.operation === "b00010".U) { // sub
     io.result := io.operand1 - io.operand2
   }
-  .elsewhen (io.operation === "b01111".U) { // subw
+  .elsewhen (io.operation === "b00100".U) { // subw
     io.result := signExtend32To64(operand1_32 - operand2_32)
   }
-  .elsewhen (io.operation === "b10000".U) { // mul
+  .elsewhen (io.operation === "b00101".U) { // mul
     io.result := io.operand1 * io.operand2
   }
-  .elsewhen (io.operation === "b10001".U) { // mulw
+  .elsewhen (io.operation === "b00110".U) { // mulw
     val mul_result = Wire(SInt(32.W))
     mul_result := operand1_32.asSInt * operand2_32.asSInt
     io.result := signExtend32To64(mul_result.asUInt)
   }
-  .elsewhen (io.operation === "b10010".U) { // mulh
+  .elsewhen (io.operation === "b00111".U) { // mulh
     // The longer version
     when ((io.operand1 === 0.U) || (io.operand2 === 0.U)) {
       io.result := 0.U
@@ -122,14 +88,14 @@ class ALU extends Module {
     //temp := io.operand1.asSInt * io.operand2.asSInt
     //io.result := temp(127, 64)
   }
-  .elsewhen (io.operation === "b10011".U) { // mulhu
+  .elsewhen (io.operation === "b01000".U) { // mulhu
     io.result := mulhu_helper(io.operand1, io.operand2)
     // The shorter version
     //val temp = Wire(UInt(128.W))
     //temp := io.operand1.asUInt * io.operand2.asUInt
     //io.result := temp(127, 64)
   }
-  .elsewhen (io.operation === "b10100".U) { // div
+  .elsewhen (io.operation === "b01001".U) { // div
     when (io.operand2 === 0.U) { // division by zero
       io.result := (-1).S(64.W).asUInt
     }
@@ -141,7 +107,7 @@ class ALU extends Module {
       io.result := (io.operand1.asSInt / io.operand2.asSInt).asUInt
     }
   }
-  .elsewhen (io.operation === "b10101".U) { // divu
+  .elsewhen (io.operation === "b01010".U) { // divu
     when (io.operand2 === 0.U) { // division by zero
       io.result := (-1).S(64.W).asUInt
     }
@@ -149,7 +115,7 @@ class ALU extends Module {
       io.result := io.operand1 / io.operand2
     }
   }
-  .elsewhen (io.operation === "b10110".U) { // divw
+  .elsewhen (io.operation === "b01011".U) { // divw
     when (operand2_32 === 0.U) { // division by zero
       io.result := (-1).S(64.W).asUInt
     }
@@ -160,7 +126,7 @@ class ALU extends Module {
       io.result := signExtend32To64((operand1_32.asSInt / operand2_32.asSInt).asUInt)
     }
   }
-  .elsewhen (io.operation === "b10111".U) { // divuw
+  .elsewhen (io.operation === "b01100".U) { // divuw
     when (operand2_32 === 0.U) { // division by zero
       io.result := (-1).S(64.W).asUInt
     }
@@ -168,45 +134,41 @@ class ALU extends Module {
       io.result := signExtend32To64(operand1_32 / operand2_32)
     }
   }
-  .elsewhen (io.operation === "b11000".U) { // rem
-    when (io.operand2 === 0.U) { // division by zero
-      io.result := io.operand1
-    }
-    .elsewhen ((io.operand1.asSInt === (((-1).S(64.W)) << 63)) && (io.operand2.asSInt === -1.S)) { // overflow
-      io.result := 0.U
-    }
-    .otherwise { // rounding towards zero, Chisel.SInt % Chisel.SInt rounds towards zero by default
-      io.result := (io.operand1.asSInt % io.operand2.asSInt).asUInt
-    }
+  .elsewhen (io.operation === "b01101".U) { // and
+    io.result := io.operand1 & io.operand2
   }
-  .elsewhen (io.operation === "b11001".U) { // remu
-    when (io.operand2 === 0.U) { // division by zero
-      io.result := io.operand1
-    }
-    .otherwise {
-      io.result := io.operand1 % io.operand2
-    }
+  .elsewhen (io.operation === "b01110".U) { // or
+    io.result := io.operand1 | io.operand2
   }
-  .elsewhen (io.operation === "b11010".U) { // remw
-    when (operand2_32 === 0.U) { // division by zero
-      io.result := signExtend32To64(operand1_32)
-    }
-    .elsewhen ((operand1_32.asSInt === (((-1).S(32.W)) << 31)) && (operand2_32.asSInt === -1.S)) { // overflow
-      io.result := 0.U
-    }
-    .otherwise {
-      io.result := signExtend32To64((operand1_32.asSInt % operand2_32.asSInt).asUInt)
-    }
+  .elsewhen (io.operation === "b01111".U) { // xor
+    io.result := io.operand1 ^ io.operand2
   }
-  .elsewhen (io.operation === "b11011".U) { // remuw
-    when (io.operand2 === 0.U) { // division by zero
-      io.result := signExtend32To64(operand1_32)
-    }
-    .otherwise {
-      io.result := signExtend32To64(operand1_32 % operand2_32)
-    }
+  .elsewhen (io.operation === "b10000".U) { // sra
+    io.result := (io.operand1.asSInt >> io.operand2(5, 0)).asUInt // sra uses 6 bits of op2
   }
-  .elsewhen (io.operation === "b11100".U) { // mulhsu
+  .elsewhen (io.operation === "b10001".U) { // sraw
+    io.result := signExtend32To64((operand1_32.asSInt >> operand2_32(4, 0)).asUInt) // arithmetic (signed)
+                                                                                // sraw takes 5 bits of op2
+  }
+  .elsewhen (io.operation === "b10010".U) { // sll
+    io.result := io.operand1 << io.operand2(5, 0) // sll uses 6 bits of op2
+  }
+  .elsewhen (io.operation === "b10011".U) { // sllw
+    io.result := signExtend32To64(operand1_32 << operand2_32(4, 0)) // sllw uses 5 bits of op2
+  }
+  .elsewhen (io.operation === "b10100".U) { // srl
+    io.result := io.operand1 >> io.operand2(5, 0) // srl uses 6 bits of op2
+  }
+  .elsewhen (io.operation === "b10101".U) { // srlw
+    io.result := signExtend32To64(operand1_32 >> operand2_32(4, 0)) // srlw uses 5 bits of op2
+  }
+  .elsewhen (io.operation === "b10110".U) { // slt
+    io.result := (io.operand1.asSInt < io.operand2.asSInt).asUInt // signed operands
+  }
+  .elsewhen (io.operation === "b10111".U) { // sltu
+    io.result := (io.operand1.asUInt < io.operand2.asUInt).asUInt
+  }
+  .elsewhen (io.operation === "b11000".U) { // mulhsu
     // The longer version
     when ((io.operand1 === 0.U) || (io.operand2 === 0.U)) {
       io.result := 0.U
@@ -224,6 +186,44 @@ class ALU extends Module {
     //val temp = Wire(UInt(128.W))
     //temp := io.operand1.asSInt * io.operand2.asUInt
     //io.result := temp(127, 64)
+  }
+  .elsewhen (io.operation === "b11001".U) { // remwu
+    when (io.operand2 === 0.U) { // division by zero
+      io.result := signExtend32To64(operand1_32)
+    }
+    .otherwise {
+      io.result := signExtend32To64(operand1_32 % operand2_32)
+    }
+  }
+  .elsewhen (io.operation === "b11010".U) { // remw
+    when (operand2_32 === 0.U) { // division by zero
+      io.result := signExtend32To64(operand1_32)
+    }
+    .elsewhen ((operand1_32.asSInt === (((-1).S(32.W)) << 31)) && (operand2_32.asSInt === -1.S)) { // overflow
+      io.result := 0.U
+    }
+    .otherwise {
+      io.result := signExtend32To64((operand1_32.asSInt % operand2_32.asSInt).asUInt)
+    }
+  }
+  .elsewhen (io.operation === "b11011".U) { // remu
+    when (io.operand2 === 0.U) { // division by zero
+      io.result := io.operand1
+    }
+    .otherwise {
+      io.result := io.operand1 % io.operand2
+    }
+  }
+  .elsewhen (io.operation === "b11100".U) { // rem
+    when (io.operand2 === 0.U) { // division by zero
+      io.result := io.operand1
+    }
+    .elsewhen ((io.operand1.asSInt === (((-1).S(64.W)) << 63)) && (io.operand2.asSInt === -1.S)) { // overflow
+      io.result := 0.U
+    }
+    .otherwise { // rounding towards zero, Chisel.SInt % Chisel.SInt rounds towards zero by default
+      io.result := (io.operand1.asSInt % io.operand2.asSInt).asUInt
+    }
   }
   .otherwise {
     io.result := 0.U // should be invalid

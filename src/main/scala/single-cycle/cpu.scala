@@ -25,12 +25,12 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
 
   
 
-  registers.io := 0.U
-  aluControl.io := 0.U
-  alu.io := 0.U
-  immGen.io := 0.U
-  controlTransfer.io := 0.U
-  io.dmem <> 0.U
+  registers.io := DontCare
+  aluControl.io := DontCare
+  alu.io := DontCare
+  immGen.io := DontCare
+  controlTransfer.io := DontCare
+  io.dmem <> DontCare
 
   //FETCH
   io.imem.address := pc
@@ -67,14 +67,15 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
     registers.io.wen := control.io.writeback_valid
   }
   controlTransfer.io.controltransferop := control.io.controltransferop 
-  when(control.io.writeback_src===0.U){
-    
+  when(control.io.op1_src===0.U){
+    alu.io.operand1 := registers.io.readdata1
   }
-  .elsewhen(control.io.writeback_src===1.U){
+  .elsewhen(control.io.op1_src===1.U){
     alu.io.operand1 := pc
   }
-  /*ControlTranferUnit*/
-  controlTransfer.io.nextpc := pc
+  
+  /*ControlTransferUnit*/
+  pc := controlTransfer.io.nextpc
 
   /*ALU Control*/
   //when(control.io.validinst === 1.U){
@@ -100,14 +101,13 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
 
 
   /*ALU */
-  registers.io.writedata := alu.io.result
-  when(control.io.op1_src===0.U){
+  when(control.io.writeback_src===0.U){
     registers.io.writedata := alu.io.result 
   }
-  .elsewhen(control.io.op1_src===1.U){
+  .elsewhen(control.io.writeback_src===1.U){
     registers.io.writedata := immGen.io.sextImm 
   }
-  .elsewhen(control.io.op1_src===2.U){
+  .elsewhen(control.io.writeback_src===2.U){
     registers.io.writedata := io.dmem.readdata//check this 
   }
 }
