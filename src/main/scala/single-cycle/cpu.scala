@@ -23,40 +23,42 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   val controlTransfer = Module(new ControlTransferUnit())
   val (cycleCount, _) = Counter(true.B, 1 << 30)
 
-  val adder = Module(new SimpleAdder())
-  adder.io.inputx := 4.U
-  adder.io.inputy := pc
-  pc := adder.io.result
+  
 
-  registers.io := DontCare
-  aluControl.io := DontCare
-  alu.io := DontCare
-  immGen.io := DontCare
-  controlTransfer.io := DontCare
-  io.dmem <> DontCare
+  registers.io := 0.U
+  aluControl.io := 0.U
+  alu.io := 0.U
+  immGen.io := 0.U
+  controlTransfer.io := 0.U
+  io.dmem <> 0.U
 
   //FETCH
   io.imem.address := pc
   io.imem.valid := true.B
-  
+  controlTransfer.io.imm := immGen.io.sextImm 
+  /*PC */
   val instruction = Wire(UInt(32.W))
   when ((pc % 8.U) === 4.U) {
     instruction := io.imem.instruction(63, 32)
   } .otherwise {
     instruction := io.imem.instruction(31, 0)
   }
-  
+  controlTransfer.io.pc := pc
   // Your code goes here
 
-  /**Instruction Memory*/
+  
+  
+
+  /*Instruction Memory*/
   control.io.opcode := instruction(6,0)
   registers.io.readreg1 := instruction(19,15)
   registers.io.readreg2 := instruction(24,20)
   registers.io.writereg := instruction(11,7)
   aluControl.io.funct7 := instruction(31,25)
   aluControl.io.funct3 := instruction(14,12)
+  controlTransfer.io.funct3 := instruction(14,12)
 
-  /**Control Unit*/
+  /*Control Unit*/
   aluControl.io.aluop := control.io.aluop
   when(instruction(11,7) === 0.U){
     registers.io.wen := 0.U
@@ -64,17 +66,50 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   .otherwise{
     registers.io.wen := control.io.writeback_valid
   }
-  /**ALU Control*/
+  controlTransfer.io.controltransferop := control.io.controltransferop 
+  when(control.io.writeback_src===0.U){
+    
+  }
+  .elsewhen(control.io.writeback_src===1.U){
+    alu.io.operand1 := pc
+  }
+  /*ControlTranferUnit*/
+  controlTransfer.io.nextpc := pc
+
+  /*ALU Control*/
   //when(control.io.validinst === 1.U){
   alu.io.operation := aluControl.io.operation
   //}
+  
 
-  /**Register File*/
-  alu.io.operand1 := registers.io.readdata1
-  alu.io.operand2 := registers.io.readdata2 
 
-  /**ALU */
+  /*Register File*/
+  controlTransfer.io.operand1 := registers.io.readdata1
+  when(control.io.op2_src===0.U){
+    controlTransfer.io.operand2 := registers.io.readdata2
+    alu.io.operand2 := registers.io.readdata2
+  }
+  .elsewhen(control.io.op2_src===1.U){
+    controlTransfer.io.operand2 := 4.U
+    alu.io.operand2 := 4.U
+  }
+  .elsewhen(control.io.op2_src===2.U){
+    controlTransfer.io.operand2 := immGen.io.sextImm 
+    alu.io.operand2 := immGen.io.sextImm 
+  }
+
+
+  /*ALU */
   registers.io.writedata := alu.io.result
+  when(control.io.op1_src===0.U){
+    registers.io.writedata := alu.io.result 
+  }
+  .elsewhen(control.io.op1_src===1.U){
+    registers.io.writedata := immGen.io.sextImm 
+  }
+  .elsewhen(control.io.op1_src===2.U){
+    registers.io.writedata := io.dmem.readdata//check this 
+  }
 }
 
 /*

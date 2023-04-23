@@ -39,6 +39,14 @@ class ControlTransferUnit extends Module {
   // default case, i.e., non-control-transfer instruction, or non-taken branch
   io.nextpc := io.pc + 4.U
   io.taken := false.B
+  when(io.controltransferop > 0.U){
+     io.taken := 1.U
+  }
+  .otherwise{
+    io.taken := 0.U
+  }
+  /*when(controltransferop === 0){
+   io.nextpc := io.pc + 4.U
+  }*/
 
-  // Your code goes here
 }

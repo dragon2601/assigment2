@@ -35,7 +35,7 @@ class ALUControl extends Module {
   io.operation := "b11111".U // Invalid
 
 
-  //ALU Op 64-bit
+  //ALU Op 64-bit R type
   when(io.aluop === "b001".U){
 
     // Funct7
@@ -108,7 +108,7 @@ class ALUControl extends Module {
     }
   }
 
-  //ALU Op 32-Bit
+  //ALU Op 32-Bit R type
   .elsewhen(io.aluop === 3.U){
     // Funct7
     when(io.funct7 === "b0000000".U){
