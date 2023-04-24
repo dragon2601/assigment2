@@ -35,7 +35,8 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   //FETCH
   io.imem.address := pc
   io.imem.valid := true.B
-  controlTransfer.io.imm := immGen.io.sextImm 
+  controlTransfer.io.imm := immGen.io.sextImm
+
   /*PC */
   val instruction = Wire(UInt(32.W))
   when ((pc % 8.U) === 4.U) {
@@ -57,7 +58,7 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   aluControl.io.funct7 := instruction(31,25)
   aluControl.io.funct3 := instruction(14,12)
   controlTransfer.io.funct3 := instruction(14,12)
-
+  immGen.io.instruction := instruction
   /*Control Unit*/
   aluControl.io.aluop := control.io.aluop
   when(instruction(11,7) === 0.U){

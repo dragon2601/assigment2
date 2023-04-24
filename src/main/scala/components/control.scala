@@ -64,8 +64,12 @@ class Control extends Module {
       Array(              /*        aluop, controltransferop, memop, op1_src, op2_src, writeback_valid, writeback_src, validinst*/
       // R-format 64-bit operands
       BitPat("b0110011") -> List(     1.U,               0.U,   0.U,     0.U,     0.U,             1.U,           0.U,       1.U),
+      // I-Format 64-bit operands
+      BitPat("b0010011") -> List(     2.U,               0.U,   0.U,     0.U,     2.U,             1.U,           0.U,       1.U),
       // R-format 32-bit operands
       BitPat("b0111011") -> List(     3.U,               0.U,   0.U,     0.U,     0.U,             1.U,           0.U,       1.U),
+      // I-Format 32-bit operands
+      BitPat("b0011011") -> List(     4.U,               0.U,   0.U,     0.U,     2.U,             1.U,           0.U,       1.U),
       ) // Array
     ) // ListLookup
 

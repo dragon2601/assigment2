@@ -155,4 +155,60 @@ class ALUControl extends Module {
       }
     }
   }
+  
+  //I-Type 64-Bit
+  .elsewhen(io.aluop === 2.U){
+    when(io.funct3 === "b000".U){
+      //ADD
+      io.operation := "b00000".U
+    }
+    .elsewhen(io.funct3 === "b001".U){
+      //SLL
+      io.operation := "b10010".U
+    }
+    .elsewhen(io.funct3 === "b101".U){
+      //SRA
+      io.operation := "b10000".U
+    }
+    .elsewhen(io.funct3 === "b101".U){
+      //SRL
+      io.operation := "b10100".U
+    }
+    .elsewhen(io.funct3 === "b110".U){
+      //OR
+      io.operation := "b01110".U
+    } 
+    .elsewhen(io.funct3 === "b111".U){
+      //AND
+      io.operation := "b01101".U
+    }
+    .elsewhen(io.funct3 === "b100".U){
+      //XOR
+      io.operation := "b01111".U
+    }
+    .elsewhen(io.funct3 === "b010".U){
+      //SLT
+      io.operation := "b10110".U
+    }
+    
+  }
+
+  //I-Type 32-Bit
+  .elsewhen(io.aluop === 4.U){
+    when(io.funct3 === "b000".U){
+      //ADDW
+      io.operation := "b00001".U
+    } .elsewhen(io.funct3 === "b001".U){
+      //SLLW
+      io.operation := "b10011".U
+    }
+    .elsewhen(io.funct3 === "b101".U){
+        //SRAW
+        io.operation := "b10001".U
+    }
+    .elsewhen(io.funct3 === "b101".U){
+      //SRLW
+      io.operation := "b10101".U
+    }
+  }
 }
