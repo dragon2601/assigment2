@@ -211,4 +211,7 @@ class ALUControl extends Module {
       io.operation := "b10101".U
     }
   }
+  .elsewhen(io.aluop === "b101".U){
+    io.operation := "b00000".U
+  }
 }

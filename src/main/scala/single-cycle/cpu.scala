@@ -46,7 +46,6 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   }
   controlTransfer.io.pc := pc
   // Your code goes here
-
   
   
 
@@ -59,6 +58,9 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   aluControl.io.funct3 := instruction(14,12)
   controlTransfer.io.funct3 := instruction(14,12)
   immGen.io.instruction := instruction
+  
+  
+
   /*Control Unit*/
   aluControl.io.aluop := control.io.aluop
   when(instruction(11,7) === 0.U){
@@ -101,6 +103,7 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   }
 
 
+
   /*ALU */
   when(control.io.writeback_src===0.U){
     registers.io.writedata := alu.io.result 
@@ -111,7 +114,25 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   .elsewhen(control.io.writeback_src===2.U){
     registers.io.writedata := io.dmem.readdata//check this 
   }
+  io.dmem.address := alu.io.result;
+
+  /*DMEM*/
+  io.dmem.valid := 1.U
+  when(control.io.memop === 0.U){
+    io.dmem.memread := 0.U
+    io.dmem.memwrite := 0.U
+  }
+  .elsewhen(control.io.memop === 1.U){
+    io.dmem.memread := 1.U
+    io.dmem.memwrite := 0.U
+  }
+  .elsewhen(control.io.memop === 2.U){
+    io.dmem.memread := 0.U
+    io.dmem.memwrite := 1.U
+  }
 }
+
+
 
 /*
  * Object to make it easier to print information about the CPU

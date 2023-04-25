@@ -70,6 +70,7 @@ class Control extends Module {
       BitPat("b0111011") -> List(     3.U,               0.U,   0.U,     0.U,     0.U,             1.U,           0.U,       1.U),
       // I-Format 32-bit operands
       BitPat("b0011011") -> List(     4.U,               0.U,   0.U,     0.U,     2.U,             1.U,           0.U,       1.U),
+      BitPat("b0000011") -> List(     5.U,               0.U,   1.U,     0.U,     2.U,             1.U,           2.U,       1.U),
       ) // Array
     ) // ListLookup
 
