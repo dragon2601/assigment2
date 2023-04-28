@@ -78,6 +78,12 @@ class Control extends Module {
       BitPat("b0010111") -> List(     5.U,               0.U,   0.U,     1.U,     2.U,             1.U,           0.U,       1.U),
       // sd instruction
       BitPat("b0100011") -> List(     5.U,               0.U,   2.U,     0.U,     2.U,             0.U,           0.U,       1.U),
+      // B-Type
+      BitPat("b1100011") -> List(     5.U,               3.U,   0.U,     0.U,     0.U,             0.U,           1.U,       1.U),
+      // JAL
+      BitPat("b1101111") -> List(     5.U,               1.U,   0.U,     1.U,     1.U,             1.U,           0.U,       1.U),
+      // JALR
+      BitPat("b1100111") -> List(     5.U,               2.U,   0.U,     1.U,     1.U,             1.U,           0.U,       1.U),
       ) // Array
     ) // ListLookup
 

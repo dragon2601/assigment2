@@ -37,14 +37,87 @@ class ControlTransferUnit extends Module {
   })
 
   // default case, i.e., non-control-transfer instruction, or non-taken branch
+  io.taken := false.B
+  io.nextpc := io.pc + 4.U
 
-  when(io.controltransferop > 0.U){
-     io.taken := true.B
+  //None
+  when(io.controltransferop === 0.U){
+     io.taken := false.B
      io.nextpc := io.pc + 4.U
   }
-  .otherwise{
-    io.taken := false.B
-    io.nextpc := io.pc + 4.U
+  .elsewhen(io.controltransferop === 3.U){
+    //Equal
+    when(io.funct3 === 0.U){
+      when(io.operand1 === io.operand2){
+        io.nextpc := io.pc + io.imm
+        io.taken := true.B
+      }
+      .otherwise{
+        io.taken := false.B
+        io.nextpc := io.pc + 4.U
+      }
+    }
+    //Not Equal
+    .elsewhen(io.funct3 === 1.U){
+      when(io.operand1 === io.operand2){
+        io.nextpc := io.pc + 4.U
+        io.taken := false.B
+      }
+      .otherwise{
+        io.taken := true.B
+        io.nextpc := io.pc + io.imm
+      }
+    }
+    // Less Than
+    .elsewhen(io.funct3 === 4.U){
+      when(io.operand1 < io.operand2){
+        io.taken := true.B
+        io.nextpc := io.pc + io.imm
+      }
+      .otherwise{
+        io.taken := false.B
+        io.nextpc := io.pc + 4.U
+      }
+    }
+    // Greater Or Equal
+    .elsewhen(io.funct3 === 5.U){
+      when(io.operand1 >= io.operand2){
+        io.taken := true.B
+        io.nextpc := io.pc + io.imm
+      }
+      .otherwise{
+        io.taken := false.B
+        io.nextpc := io.pc + 4.U
+      }
+    }
+    // Less Than (U)
+    .elsewhen(io.funct3 === 6.U){
+      when(io.operand1 < io.operand2){
+        io.taken := true.B
+        io.nextpc := io.pc + io.imm
+      }
+      .otherwise{
+        io.taken := false.B
+        io.nextpc := io.pc + 4.U
+      }
+    } //Greater Or Equal (U)
+    .elsewhen(io.funct3 === 7.U){
+      when(io.operand1 >= io.operand2){
+        io.taken := true.B
+        io.nextpc := io.pc + io.imm
+      }
+      .otherwise{
+        io.taken := false.B
+        io.nextpc := io.pc + 4.U
+      }
+    }
   }
-  
+  .elsewhen(io.controltransferop === 1.U){
+    io.nextpc := io.pc + io.imm
+    io.taken := true.B
+  }
+  .elsewhen(io.controltransferop === 2.U){
+    io.nextpc := io.operand1 + io.imm
+    io.taken := true.B
+  }
 }

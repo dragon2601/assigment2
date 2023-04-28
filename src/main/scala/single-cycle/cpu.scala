@@ -45,9 +45,6 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
     instruction := io.imem.instruction(31, 0)
   }
   controlTransfer.io.pc := pc
-  // Your code goes here
-  
-  
 
   /*Instruction Memory*/
   control.io.opcode := instruction(6,0)
@@ -63,6 +60,10 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
 
   /*Control Unit*/
   aluControl.io.aluop := control.io.aluop
+  controlTransfer.io.controltransferop := control.io.controltransferop
+
+
+
   when(instruction(11,7) === 0.U){
     registers.io.wen := 0.U
   } 
@@ -82,9 +83,8 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   pc := controlTransfer.io.nextpc
 
   /*ALU Control*/
-  //when(control.io.validinst === 1.U){
   alu.io.operation := aluControl.io.operation
-  //}
+
   
 
 
