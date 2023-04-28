@@ -70,7 +70,14 @@ class Control extends Module {
       BitPat("b0111011") -> List(     3.U,               0.U,   0.U,     0.U,     0.U,             1.U,           0.U,       1.U),
       // I-Format 32-bit operands
       BitPat("b0011011") -> List(     4.U,               0.U,   0.U,     0.U,     2.U,             1.U,           0.U,       1.U),
+      // ld instruction
       BitPat("b0000011") -> List(     5.U,               0.U,   1.U,     0.U,     2.U,             1.U,           2.U,       1.U),
+      // lui instruction
+      BitPat("b0110111") -> List(     5.U,               0.U,   0.U,     0.U,     2.U,             1.U,           1.U,       1.U),
+      // auipc instruction
+      BitPat("b0010111") -> List(     5.U,               0.U,   0.U,     1.U,     2.U,             1.U,           0.U,       1.U),
+      // sd instruction
+      BitPat("b0100011") -> List(     5.U,               0.U,   2.U,     0.U,     2.U,             0.U,           0.U,       1.U),
       ) // Array
     ) // ListLookup
 

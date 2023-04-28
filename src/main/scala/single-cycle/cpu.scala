@@ -77,6 +77,7 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
     alu.io.operand1 := pc
   }
   
+
   /*ControlTransferUnit*/
   pc := controlTransfer.io.nextpc
 
@@ -118,6 +119,7 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
 
   /*DMEM*/
   io.dmem.valid := 1.U
+  io.dmem.writedata := registers.io.readdata2
   when(control.io.memop === 0.U){
     io.dmem.memread := 0.U
     io.dmem.memwrite := 0.U
@@ -129,6 +131,43 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   .elsewhen(control.io.memop === 2.U){
     io.dmem.memread := 0.U
     io.dmem.memwrite := 1.U
+  }
+
+  /* Sign Extend or Mask Memory Results */
+  //lb/sb
+  when(instruction(14,12)==="b000".U){
+    io.dmem.sext := 1.U
+    io.dmem.maskmode := 0.U
+  }
+  //lh/sh
+  .elsewhen(instruction(14,12)==="b001".U){
+    io.dmem.sext := 1.U
+    io.dmem.maskmode := 1.U
+  }
+  //lw/sw
+  .elsewhen(instruction(14,12)==="b010".U){
+    io.dmem.sext := 1.U
+    io.dmem.maskmode := 2.U
+  }
+  //ld/sd
+  .elsewhen(instruction(14,12)==="b011".U){
+    io.dmem.sext := 0.U
+    io.dmem.maskmode := 3.U
+  }
+  //lbu
+  when(instruction(14,12)==="b100".U){
+    io.dmem.sext := 0.U
+    io.dmem.maskmode := 0.U
+  }
+  //lhu
+  .elsewhen(instruction(14,12)==="b101".U){
+    io.dmem.sext := 0.U
+    io.dmem.maskmode := 1.U
+  }
+  //lwu
+  .elsewhen(instruction(14,12)==="b110".U){
+    io.dmem.sext := 0.U
+    io.dmem.maskmode := 2.U
   }
 }
 
