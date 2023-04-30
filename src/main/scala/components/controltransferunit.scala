@@ -48,7 +48,7 @@ class ControlTransferUnit extends Module {
   .elsewhen(io.controltransferop === 3.U){
     //Equal
     when(io.funct3 === 0.U){
-      when(io.operand1 === io.operand2){
+      when(io.operand1.asSInt === io.operand2.asSInt){
         io.nextpc := io.pc + io.imm
         io.taken := true.B
       }
@@ -59,7 +59,7 @@ class ControlTransferUnit extends Module {
     }
     //Not Equal
     .elsewhen(io.funct3 === 1.U){
-      when(io.operand1 === io.operand2){
+      when(io.operand1.asSInt === io.operand2.asSInt){
         io.nextpc := io.pc + 4.U
         io.taken := false.B
       }
@@ -70,7 +70,7 @@ class ControlTransferUnit extends Module {
     }
     // Less Than
     .elsewhen(io.funct3 === 4.U){
-      when(io.operand1 < io.operand2){
+      when(io.operand1.asSInt < io.operand2.asSInt){
         io.taken := true.B
         io.nextpc := io.pc + io.imm
       }
@@ -81,7 +81,7 @@ class ControlTransferUnit extends Module {
     }
     // Greater Or Equal
     .elsewhen(io.funct3 === 5.U){
-      when(io.operand1 >= io.operand2){
+      when(io.operand1.asSInt >= io.operand2.asSInt){
         io.taken := true.B
         io.nextpc := io.pc + io.imm
       }

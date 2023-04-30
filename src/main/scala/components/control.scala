@@ -73,13 +73,13 @@ class Control extends Module {
       // ld instruction
       BitPat("b0000011") -> List(     5.U,               0.U,   1.U,     0.U,     2.U,             1.U,           2.U,       1.U),
       // lui instruction
-      BitPat("b0110111") -> List(     5.U,               0.U,   0.U,     0.U,     2.U,             1.U,           1.U,       1.U),
+      BitPat("b0110111") -> List(     0.U,               0.U,   0.U,     0.U,     0.U,             1.U,           1.U,       1.U),
       // auipc instruction
       BitPat("b0010111") -> List(     5.U,               0.U,   0.U,     1.U,     2.U,             1.U,           0.U,       1.U),
       // sd instruction
       BitPat("b0100011") -> List(     5.U,               0.U,   2.U,     0.U,     2.U,             0.U,           0.U,       1.U),
       // B-Type
-      BitPat("b1100011") -> List(     5.U,               3.U,   0.U,     0.U,     0.U,             0.U,           1.U,       1.U),
+      BitPat("b1100011") -> List(     0.U,               3.U,   0.U,     0.U,     0.U,             0.U,           0.U,       1.U),
       // JAL
       BitPat("b1101111") -> List(     5.U,               1.U,   0.U,     1.U,     1.U,             1.U,           0.U,       1.U),
       // JALR

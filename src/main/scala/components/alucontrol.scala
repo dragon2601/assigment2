@@ -167,12 +167,17 @@ class ALUControl extends Module {
       io.operation := "b10010".U
     }
     .elsewhen(io.funct3 === "b101".U){
-      //SRA
-      io.operation := "b10000".U
+      when(io.funct7 === 0.U){
+        //SRL
+        io.operation := "b10100".U
+      }
+        //SRA
+      .elsewhen(io.funct7 === 32.U){
+        io.operation := "b10000".U
+      }
     }
     .elsewhen(io.funct3 === "b101".U){
-      //SRL
-      io.operation := "b10100".U
+      
     }
     .elsewhen(io.funct3 === "b110".U){
       //OR
@@ -203,12 +208,14 @@ class ALUControl extends Module {
       io.operation := "b10011".U
     }
     .elsewhen(io.funct3 === "b101".U){
+      when(io.funct7 === 32.U){
         //SRAW
         io.operation := "b10001".U
-    }
-    .elsewhen(io.funct3 === "b101".U){
-      //SRLW
-      io.operation := "b10101".U
+      }
+      .elsewhen(io.funct7 === 0.U){
+        //SRLW
+        io.operation := "b10101".U
+      }
     }
   }
   .elsewhen(io.aluop === "b101".U){
